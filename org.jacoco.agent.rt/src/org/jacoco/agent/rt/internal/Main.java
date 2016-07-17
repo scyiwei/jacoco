@@ -20,10 +20,12 @@ import org.jacoco.core.runtime.ModifiedSystemClassRuntime;
 /**
  * The agent which is referred as the <code>Premain-Class</code>. The agent
  * configuration is provided with the agent parameters in the command line.
+ *
+ * change: add agent-main support
  */
-public final class PreMain {
+public final class Main {
 
-	private PreMain() {
+	private Main() {
 		// no instances
 	}
 
@@ -39,7 +41,7 @@ public final class PreMain {
 	 */
 	public static void premain(final String options, final Instrumentation inst)
 			throws Exception {
-
+        System.out.println("Inject:"+options);
 		final AgentOptions agentOptions = new AgentOptions(options);
 
 		final Agent agent = Agent.getInstance(agentOptions);
@@ -48,6 +50,19 @@ public final class PreMain {
 		runtime.startup(agent.getData());
 		inst.addTransformer(new CoverageTransformer(runtime, agentOptions,
 				IExceptionLogger.SYSTEM_ERR));
+	}
+
+	/**
+	 *
+	 * This method is called by the JVM to initialize Java agents.
+	 *
+	 * @param options
+	 * @param inst
+	 * @throws Exception
+     */
+	public static void agentmain(final String options, final Instrumentation inst)
+			throws Exception{
+		premain(options,inst);
 	}
 
 	private static IRuntime createRuntime(final Instrumentation inst)
